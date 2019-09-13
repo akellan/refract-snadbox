@@ -7,14 +7,14 @@
     "@types/node": "12.7.5",
     "@types/react": "16.9.2",
     "@types/react-dom": "16.9.0",
-    "react": "^16.9.0",
+    "react": "16.9.0",
     "react-dom": "^16.9.0",
     "react-scripts": "3.1.1",
-    "refract-rxjs": "^4.2.2",
-    "rxjs": "^6.5.3",
-    "tslint": "^5.20.0",
-    "tslint-config-airbnb": "^5.11.1",
-    "typescript": "3.6.3"
+    "refract-rxjs": "4.2.2",
+    "rxjs": "6.5.3",
+    "tslint": "5.20.0",
+    "tslint-config-airbnb": "5.11.1",
+    "typescript": "3.5.3"
   },
   "scripts": {
     "start": "react-scripts start",
