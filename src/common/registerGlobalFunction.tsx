@@ -1,4 +1,12 @@
-export function registerGlobalFunction(name: string, func: () => void) {
+import { Observable } from "rxjs";
+
+export function registerGlobalFunction(name: string) {
   const windowRecord = window as Record<string, any>;
-  windowRecord[name] = func;
+
+  return new Observable((subscriber) => {
+    windowRecord[name] = () => {
+      subscriber.next();
+      subscriber.complete();
+    };
+  });
 }

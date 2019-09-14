@@ -1,5 +1,4 @@
 import React from "react";
-import { FCE } from "../refract-react";
 
 export interface ILoadingOverlayProps {
   show: boolean;
