@@ -1,11 +1,11 @@
 import React from "react";
 import "./App.css";
-import { LoadingGoogleAuthOverlay } from "./google-auth/GoogleAuthLoading";
+import { GoogleAuthLoadingOverlay } from "./google-auth/GoogleAuthLoadingOverlay";
 import logo from "./logo.svg";
 
 const App: React.FC = () => {
   return (
-    <LoadingGoogleAuthOverlay
+    <GoogleAuthLoadingOverlay
       show={true}
       clientId="160547990505-pi8bo68e71eoet5ueradlmu2rpttv0qe.apps.googleusercontent.com"
     >
@@ -25,7 +25,7 @@ const App: React.FC = () => {
           </a>
         </header>
       </div>
-    </LoadingGoogleAuthOverlay>
+    </GoogleAuthLoadingOverlay>
   );
 };
 

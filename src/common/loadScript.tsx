@@ -6,10 +6,17 @@ function loadScript(src: string, async: boolean, defer: boolean) {
     const script = document.createElement("script");
     script.async = async;
     script.defer = defer;
-    script.onload = function onload() {
+
+    script.onload = () => {
       subscriber.next();
       subscriber.complete();
     };
+
+    script.onerror = (e) => {
+      subscriber.error(e);
+      subscriber.complete();
+    };
+
     document.body.insertBefore(script, null);
     script.src = src;
   });

@@ -1,6 +1,6 @@
 import { Observable } from "rxjs";
 import { switchMap } from "rxjs/operators";
-import { loadScriptAsncDefer, registerGlobalFunction } from "../common";
+import { loadScriptAsncDefer, observeGlobalFunction } from "../common";
 
 export function getGoogleAuth() {
   return new Observable((subscriber) => {
@@ -13,7 +13,7 @@ export function getGoogleAuth() {
 
 export function loadGoogleAuth(clientId: string) {
   const globalFunctionName = "onLoadGooglePlaform";
-  const $onGoglePlatformLoad = registerGlobalFunction(globalFunctionName);
+  const $onGoglePlatformLoad = observeGlobalFunction(globalFunctionName);
 
   loadScriptAsncDefer(
     `https://apis.google.com/js/platform.js?onload=${globalFunctionName}`,
