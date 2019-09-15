@@ -2,12 +2,16 @@ import React from "react";
 import { ObservableComponent, toProps, withEffects } from "refract-rxjs";
 import { from, merge, pipe } from "rxjs";
 import { map, mergeMap, startWith } from "rxjs/operators";
-import { getGoogleAuth } from "./GoogleAuth";
+import { googleAuthApi } from "./GoogleAuth";
 
 interface ILogInButtonProps {
   currentUser: gapi.auth2.GoogleUser;
   isSignedIn: boolean;
   isLoading: boolean;
+}
+
+interface IGoogleAuthLogInButtonProps {
+  googleApi: typeof googleAuthApi;
 }
 
 export const LogInButton: FCE<ILogInButtonProps> = ({
@@ -18,7 +22,7 @@ export const LogInButton: FCE<ILogInButtonProps> = ({
   if (isSignedIn) {
     return (
       <div>
-        {currentUser.getBasicProfile().getName()}{" "}
+        {currentUser.getBasicProfile().getName()}
         <img
           alt="Profile icon"
           src={currentUser.getBasicProfile().getImageUrl()}
@@ -30,9 +34,12 @@ export const LogInButton: FCE<ILogInButtonProps> = ({
   return <button onClick={pushEvent("logIn")}>Log In</button>;
 };
 
-const googleLogInApperture = (component: ObservableComponent) => {
+const googleLogInApperture = (
+  component: ObservableComponent,
+  { googleApi }: IGoogleAuthLogInButtonProps,
+) => {
   const mapSignedInInfo = pipe(
-    mergeMap(() => getGoogleAuth()),
+    mergeMap(() => googleApi.getGoogleAuth()),
     map((googleAuth: gapi.auth2.GoogleAuth) => ({
       isSignedIn: googleAuth.isSignedIn.get(),
       currentUser: googleAuth.currentUser.get(),
@@ -49,7 +56,7 @@ const googleLogInApperture = (component: ObservableComponent) => {
   );
 
   const $logInEvenToProps = component.fromEvent("logIn").pipe(
-    mergeMap(() => getGoogleAuth()),
+    mergeMap(() => googleApi.getGoogleAuth()),
     mergeMap((googleAuth: gapi.auth2.GoogleAuth) =>
       from(googleAuth.signIn({ ux_mode: "popup" })),
     ),
@@ -57,7 +64,7 @@ const googleLogInApperture = (component: ObservableComponent) => {
   );
 
   const $logOutEventToProps = component.fromEvent("logOut").pipe(
-    mergeMap(() => getGoogleAuth()),
+    mergeMap(() => googleApi.getGoogleAuth()),
     mergeMap((googleAuth: gapi.auth2.GoogleAuth) => from(googleAuth.signOut())),
     mapSignedInInfo,
   );
@@ -66,7 +73,7 @@ const googleLogInApperture = (component: ObservableComponent) => {
 };
 
 export const GoogleAuthLogInButton = withEffects<
-  unknown,
+  IGoogleAuthLogInButtonProps,
   unknown,
   ILogInButtonProps
 >(googleLogInApperture)(LogInButton);

@@ -1,13 +1,27 @@
 import { ObservableComponent, toProps, withEffects } from "refract-rxjs";
-import { map } from "rxjs/operators";
+import { map, mergeMap, startWith } from "rxjs/operators";
 import { ILoadingOverlayProps, LoadingOverlay } from "../common/components";
-import { loadGoogleAuth } from "./GoogleAuth";
+import { googleAuthApi } from "./GoogleAuth";
 
-const aperture = (_: ObservableComponent, { clientId }: any) => {
-  return loadGoogleAuth(clientId).pipe(map(() => toProps({ show: false })));
+interface IGoogleAuthLoadingOverlayProps {
+  googleApi: typeof googleAuthApi;
+  clientId: string;
+}
+
+const aperture = (
+  component: ObservableComponent,
+  { clientId, googleApi }: IGoogleAuthLoadingOverlayProps,
+) => {
+  return component.mount.pipe(
+    mergeMap(() => googleApi.loadGoogleAuth(clientId)),
+    map(() => ({ show: false })),
+    startWith({ show: true }),
+    map(toProps),
+  );
 };
 
 export const GoogleAuthLoadingOverlay = withEffects<
-  ILoadingOverlayProps & { clientId: string },
-  unknown
+  IGoogleAuthLoadingOverlayProps,
+  unknown,
+  ILoadingOverlayProps
 >(aperture)(LoadingOverlay);

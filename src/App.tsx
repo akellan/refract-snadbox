@@ -1,16 +1,20 @@
 import React from "react";
 import "./App.css";
-import { GoogleAuthLoadingOverlay, GoogleAuthLogInButton } from "./google-auth";
+import {
+  googleAuthApi,
+  GoogleAuthLoadingOverlay,
+  GoogleAuthLogInButton,
+} from "./google-auth";
 import logo from "./logo.svg";
 
 const App: React.FC = () => {
   return (
     <GoogleAuthLoadingOverlay
-      show={true}
       clientId="160547990505-pi8bo68e71eoet5ueradlmu2rpttv0qe.apps.googleusercontent.com"
+      googleApi={googleAuthApi}
     >
       <div className="App">
-        <GoogleAuthLogInButton />
+        <GoogleAuthLogInButton googleApi={googleAuthApi} />
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <p>

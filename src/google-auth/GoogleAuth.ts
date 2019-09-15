@@ -27,3 +27,8 @@ function initAuth2(clientId: string) {
     });
   });
 }
+
+export const googleAuthApi = {
+  getGoogleAuth,
+  loadGoogleAuth,
+};
