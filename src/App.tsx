@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import { GoogleAuthLoadingOverlay } from "./google-auth/GoogleAuthLoadingOverlay";
+import { GoogleAuthLoadingOverlay, GoogleAuthLogInButton } from "./google-auth";
 import logo from "./logo.svg";
 
 const App: React.FC = () => {
@@ -10,6 +10,7 @@ const App: React.FC = () => {
       clientId="160547990505-pi8bo68e71eoet5ueradlmu2rpttv0qe.apps.googleusercontent.com"
     >
       <div className="App">
+        <GoogleAuthLogInButton />
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <p>

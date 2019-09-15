@@ -1,14 +1,9 @@
-import { Observable } from "rxjs";
+import { from, Observable } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { loadScriptAsncDefer, observeGlobalFunction } from "../common";
 
 export function getGoogleAuth() {
-  return new Observable((subscriber) => {
-    gapi.auth2.getAuthInstance().then((googleAuth) => {
-      subscriber.next(googleAuth);
-      subscriber.complete();
-    });
-  });
+  return from(gapi.auth2.getAuthInstance());
 }
 
 export function loadGoogleAuth(clientId: string) {
