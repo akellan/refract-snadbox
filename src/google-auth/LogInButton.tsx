@@ -1,6 +1,6 @@
 import React from "react";
 import { ObservableComponent, toProps, withEffects } from "refract-rxjs";
-import { from, merge, of, pipe } from "rxjs";
+import { from, merge, never, pipe, of } from "rxjs";
 import { catchError, map, mergeMap, startWith, tap } from "rxjs/operators";
 import { googleAuthApi } from "./GoogleAuth";
 
@@ -56,15 +56,12 @@ const googleLogInApperture = (
   );
 
   const $logInEvenToProps = component.fromEvent("logIn").pipe(
-    tap(console.info),
     mergeMap(() => googleApi.getGoogleAuth()),
     mergeMap((googleAuth: gapi.auth2.GoogleAuth) =>
       from(googleAuth.signIn({ ux_mode: "popup" })),
     ),
-    catchError((error) => of(error)),
-    tap(console.info),
     mapSignedInInfo,
-    tap(console.info),
+    catchError((_, source) => source),
   );
 
   const $logOutEventToProps = component.fromEvent("logOut").pipe(
