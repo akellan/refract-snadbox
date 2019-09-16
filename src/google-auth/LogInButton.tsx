@@ -1,7 +1,7 @@
 import React from "react";
 import { ObservableComponent, toProps, withEffects } from "refract-rxjs";
-import { from, merge, pipe } from "rxjs";
-import { map, mergeMap, startWith } from "rxjs/operators";
+import { from, merge, of, pipe } from "rxjs";
+import { catchError, map, mergeMap, startWith, tap } from "rxjs/operators";
 import { googleAuthApi } from "./GoogleAuth";
 
 interface ILogInButtonProps {
@@ -56,11 +56,15 @@ const googleLogInApperture = (
   );
 
   const $logInEvenToProps = component.fromEvent("logIn").pipe(
+    tap(console.info),
     mergeMap(() => googleApi.getGoogleAuth()),
     mergeMap((googleAuth: gapi.auth2.GoogleAuth) =>
       from(googleAuth.signIn({ ux_mode: "popup" })),
     ),
+    catchError((error) => of(error)),
+    tap(console.info),
     mapSignedInInfo,
+    tap(console.info),
   );
 
   const $logOutEventToProps = component.fromEvent("logOut").pipe(
