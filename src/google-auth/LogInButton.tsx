@@ -1,7 +1,14 @@
 import React from "react";
 import { ObservableComponent, toProps, withEffects } from "refract-rxjs";
 import { from, merge, pipe } from "rxjs";
-import { map, mergeMap, retry, startWith } from "rxjs/operators";
+import {
+  map,
+  mapTo,
+  mergeMap,
+  mergeMapTo,
+  retry,
+  startWith,
+} from "rxjs/operators";
 import { googleAuthApi } from "./GoogleAuth";
 
 interface ILogInButtonProps {
@@ -18,7 +25,14 @@ export const LogInButton: FCE<ILogInButtonProps> = ({
   pushEvent,
   currentUser,
   isSignedIn,
+  isLoading,
 }) => {
+  console.info({
+    pushEvent,
+    currentUser,
+    isSignedIn,
+    isLoading,
+  });
   if (isSignedIn) {
     return (
       <div>
@@ -31,7 +45,11 @@ export const LogInButton: FCE<ILogInButtonProps> = ({
       </div>
     );
   }
-  return <button onClick={pushEvent("logIn")}>Log In</button>;
+  return !isLoading ? (
+    <button onClick={pushEvent("logIn")}>Log In</button>
+  ) : (
+    <div>Loading...</div>
+  );
 };
 
 const googleLogInApperture = (
@@ -39,42 +57,62 @@ const googleLogInApperture = (
   { googleApi }: IGoogleAuthLogInButtonProps,
 ) => {
   const mapSignedInInfo = pipe(
-    mergeMap(() => googleApi.getGoogleAuth()),
+    mergeMapTo(googleApi.getGoogleAuth()),
     map((googleAuth: gapi.auth2.GoogleAuth) => ({
       isSignedIn: googleAuth.isSignedIn.get(),
       currentUser: googleAuth.currentUser.get(),
+      isLoading: false,
     })),
-    map(toProps),
   );
 
   const $isSignedIn = component.mount.pipe(
+    mapSignedInInfo,
     startWith({
       isSignedIn: false,
       currentUser: null,
+      isLoading: true,
     }),
-    mapSignedInInfo,
+    map(toProps),
   );
 
+  const $logInEventStarted = component
+    .fromEvent("logIn")
+    .pipe(mapTo(toProps({ isLoading: true })));
+
+  const $logOutEventStarted = component
+    .fromEvent("logOut")
+    .pipe(mapTo(toProps({ isLoading: true })));
+
   const $logInEvenToProps = component.fromEvent("logIn").pipe(
-    mergeMap(() => googleApi.getGoogleAuth()),
+    mergeMapTo(googleApi.getGoogleAuth()),
     mergeMap((googleAuth: gapi.auth2.GoogleAuth) =>
       from(googleAuth.signIn({ ux_mode: "popup" })),
     ),
     mapSignedInInfo,
     retry(),
+    map((data) => ({ ...data, isLoading: false })),
+    map(toProps),
   );
 
   const $logOutEventToProps = component.fromEvent("logOut").pipe(
-    mergeMap(() => googleApi.getGoogleAuth()),
+    mergeMapTo(googleApi.getGoogleAuth()),
     mergeMap((googleAuth: gapi.auth2.GoogleAuth) => from(googleAuth.signOut())),
     mapSignedInInfo,
+    map((data) => ({ ...data, isLoading: false })),
+    map(toProps),
   );
 
-  return merge($isSignedIn, $logInEvenToProps, $logOutEventToProps);
+  return merge(
+    $isSignedIn,
+    $logInEvenToProps,
+    $logOutEventToProps,
+    $logInEventStarted,
+    $logOutEventStarted,
+  );
 };
 
 export const GoogleAuthLogInButton = withEffects<
   IGoogleAuthLogInButtonProps,
   unknown,
   ILogInButtonProps
->(googleLogInApperture)(LogInButton);
+>(googleLogInApperture, { mergeProps: true })(LogInButton);
