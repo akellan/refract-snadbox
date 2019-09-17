@@ -1,10 +1,7 @@
 import React from "react";
 import "./App.css";
-import {
-  googleAuthApi,
-  GoogleAuthLoadingOverlay,
-  GoogleAuthLogInButton,
-} from "./google-auth";
+import { googleAuthApi, GoogleAuthLoadingOverlay } from "./google-auth";
+import { GoogleAuthLogInButton } from "./google-auth/GoogleLoginButton";
 import logo from "./logo.svg";
 
 const App: React.FC = () => {
