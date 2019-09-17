@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: npm install, build, and test
-      - uses: Borales/actions-yarn@1.1.0
+        uses: Borales/actions-yarn@1.1.0
         run: |
           yarn install
           yarn run build
